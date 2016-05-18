@@ -28,10 +28,24 @@ public class Scheduler {
 		backTrack(new Schedule(), 0, numberOfWantedSchedules);
 	}
 	
+	/**
+	 * 
+	 * @param schedule - temporal schedule to do all the changes
+	 * @param k - number of classes inserted in the schedule
+	 * @param n - number of classes desired to be enrolled 
+	 */
 	private void backTrack(Schedule schedule, int k, int n) {
 		
-		if(k == n) 
+		// Entra aquí cuando el número de clases que has metido en este schedule es el mismo que el número de clases que quieres
+		// meter en el semestre
+		if(k == n) {
 			possibleSchedules.add(schedule);
+			
+			// Esto lo tengo que hacer para mostrar que sí funciona el algoritmo, al llamar la función de
+			// printPossibleSchedules() el problema es que no imprime como se debería porque está agarrando
+			// schedule como puntero y lo que imprimimos es el schedule que vaciamos con schedule.deleteClassSchedule
+			printSchedule(schedule);
+		}
 		else {
 			
 			for(int i = k; i < wantedClassesSchedules.size(); i++) {
@@ -44,7 +58,7 @@ public class Scheduler {
 			}
 		}
 	}
-	
+		
 	public void printPossibleSchedules() {
 		for(Schedule schedule: possibleSchedules) {
 			for(ClassSchedule classSchedule: schedule.classSchedules) 
