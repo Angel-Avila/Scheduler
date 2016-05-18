@@ -7,17 +7,14 @@ public class Scheduler {
 	
 	protected ArrayList<Schedule> possibleSchedules;
 	protected ArrayList<ArrayList<ClassSchedule>> wantedClassesSchedules;
-	private int numberOfWantedSchedules;
 	
 	public Scheduler() {
 		possibleSchedules = new ArrayList<Schedule>();
 		wantedClassesSchedules = new ArrayList<ArrayList<ClassSchedule>>();
-		numberOfWantedSchedules = 0;
 	}
 	
 	public void addWantedClassSchedule(ArrayList<ClassSchedule> classSchedule) {
 		wantedClassesSchedules.add(classSchedule);
-		numberOfWantedSchedules++;
 	}
 	
 	public ArrayList<ClassSchedule> getWantedClassSchedule(int i) {
@@ -25,11 +22,10 @@ public class Scheduler {
 	}
 	
 	public void calcAllPossibleSchedules() {
-		backTrack(new Schedule(), 0, numberOfWantedSchedules);
+		backTrack(new Schedule(), 0, wantedClassesSchedules.size());
 	}
 	
 	/**
-	 * 
 	 * @param schedule - temporal schedule to do all the changes
 	 * @param k - number of classes inserted in the schedule
 	 * @param n - number of classes desired to be enrolled 
@@ -62,15 +58,16 @@ public class Scheduler {
 	public void printPossibleSchedules() {
 		for(Schedule schedule: possibleSchedules) {
 			for(ClassSchedule classSchedule: schedule.classSchedules) 
-				System.out.println(classSchedule.teacher.name);
-			System.out.println("------------------------------------");
+				System.out.println(schedule + ": " + classSchedule.teacher.name);
+			System.out.println(schedule);
+			System.out.println("------------------------------------------------------------");
 		}
 	}
 	
 	public void printSchedule(Schedule schedule) {
 		for(ClassSchedule classSchedule: schedule.classSchedules) 
-			System.out.println(classSchedule.teacher.name);
-		System.out.println("==================================");
+			System.out.println(schedule + ": " + classSchedule.teacher.name);
+		System.out.println("============================================================");
 	}
 	
 	public void sumAllSchedules() {
