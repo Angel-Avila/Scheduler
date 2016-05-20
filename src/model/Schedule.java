@@ -2,7 +2,7 @@ package model;
 
 import java.util.ArrayList;
 
-public class Schedule {
+public class Schedule implements Cloneable {
 	protected ClassDay[] schoolWeek;
 	protected ArrayList<ClassSchedule> classSchedules;
 	protected int huecos;
@@ -31,12 +31,16 @@ public class Schedule {
 	
 	public Schedule(Schedule schedule) {
 		schoolWeek = schedule.getSchoolWeek();
-		classSchedules = schedule.getClassSchedules();
+		classSchedules = extracted(schedule);
 		huecos = schedule.getHuecos();
 		barcos = schedule.getBarcos();
 		mamones = schedule.getMamones();
 		buenos = schedule.getBuenos();
 		daysToGo = schedule.getDaysToGo();
+	}
+
+	protected ArrayList<ClassSchedule> extracted(Schedule schedule) {
+		return (ArrayList<ClassSchedule>) schedule.getClassSchedules().clone();
 	}
 	
 	public ClassDay[] getSchoolWeek() {
@@ -179,5 +183,9 @@ public class Schedule {
 				if(schedule.teacher.isMamon())
 					mamones++;
 		}
+	}
+	
+	protected Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 }

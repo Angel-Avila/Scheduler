@@ -35,12 +35,25 @@ public class Scheduler {
 		// Entra aquí cuando el número de clases que has metido en este schedule es el mismo que el número de clases que quieres
 		// meter en el semestre
 		if(k == n) {
-			possibleSchedules.add(schedule);
+			try {
+				Schedule tempSchedule = (Schedule) schedule.clone();
+				tempSchedule.setClassSchedules(schedule.extracted(schedule));
+				possibleSchedules.add(tempSchedule);
+				
+				//System.out.println(tempSchedule.classSchedules);
+				//System.out.println(schedule.classSchedules);
+				
+				// Esto lo tengo que hacer para mostrar que sí funciona el algoritmo, al llamar la función de
+				// printPossibleSchedules() el problema es que no imprime como se debería porque está agarrando
+				// schedule como puntero y lo que imprimimos es el schedule que vaciamos con schedule.deleteClassSchedule
+				//printSchedule(tempSchedule);
+				//printSchedule(schedule);
+			} catch (CloneNotSupportedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
-			// Esto lo tengo que hacer para mostrar que sí funciona el algoritmo, al llamar la función de
-			// printPossibleSchedules() el problema es que no imprime como se debería porque está agarrando
-			// schedule como puntero y lo que imprimimos es el schedule que vaciamos con schedule.deleteClassSchedule
-			printSchedule(schedule);
+			
 		}
 		else {
 			
@@ -59,7 +72,8 @@ public class Scheduler {
 		for(Schedule schedule: possibleSchedules) {
 			for(ClassSchedule classSchedule: schedule.classSchedules) 
 				System.out.println(schedule + ": " + classSchedule.teacher.name);
-			System.out.println(schedule);
+			//System.out.println(schedule);
+			System.out.println(schedule.classSchedules);
 			System.out.println("------------------------------------------------------------");
 		}
 	}

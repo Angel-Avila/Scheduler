@@ -16,6 +16,22 @@ public class ClassDay {
 		numberOfClasses = 0;
 	}
 	
+	public Day getDay() {
+		return day;
+	}
+
+	public void setDay(Day day) {
+		this.day = day;
+	}
+
+	public ClassHour[] getHours() {
+		return hours;
+	}
+
+	public void setHours(ClassHour[] hours) {
+		this.hours = hours;
+	}
+
 	public boolean isGoing() {
 		return numberOfClasses > 0;
 	}
