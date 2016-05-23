@@ -1,0 +1,9 @@
+.root{
+	-fx-background-color: #ffffff;
+}
+
+#monospaced {
+	-fx-font: 16px Helvetica;
+	-fx-stroke-width: 2;
+	fx-stroke: black;
+}

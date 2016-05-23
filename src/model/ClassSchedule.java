@@ -13,6 +13,30 @@ public class ClassSchedule {
 		this.classes = classes;
 	}
 	
+	public Subject getSubject() {
+		return subject;
+	}
+
+	public void setSubject(Subject subject) {
+		this.subject = subject;
+	}
+
+	public Teacher getTeacher() {
+		return teacher;
+	}
+
+	public void setTeacher(Teacher teacher) {
+		this.teacher = teacher;
+	}
+
+	public ArrayList<ClassHour> getClasses() {
+		return classes;
+	}
+
+	public void setClasses(ArrayList<ClassHour> classes) {
+		this.classes = classes;
+	}
+
 	public void addClassHour(ClassHour classHour) {
 		classes.add(classHour);
 	}

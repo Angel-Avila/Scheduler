@@ -1,7 +1,11 @@
-package model;
+package controller;
 
 import java.util.ArrayList;
 import java.util.Collections;
+
+import model.ClassSchedule;
+import model.Schedule;
+import model.SortCategory;
 
 public class Scheduler {
 	
@@ -21,6 +25,14 @@ public class Scheduler {
 		return wantedClassesSchedules.get(i);
 	}
 	
+	public ArrayList<Schedule> getPossibleSchedules() {
+		return possibleSchedules;
+	}
+
+	public ArrayList<ArrayList<ClassSchedule>> getWantedClassesSchedules() {
+		return wantedClassesSchedules;
+	}
+
 	public void calcAllPossibleSchedules() {
 		backTrack(new Schedule(), 0, wantedClassesSchedules.size());
 	}
@@ -39,20 +51,9 @@ public class Scheduler {
 				Schedule tempSchedule = (Schedule) schedule.clone();
 				tempSchedule.setClassSchedules(schedule.extracted(schedule));
 				possibleSchedules.add(tempSchedule);
-				
-				//System.out.println(tempSchedule.classSchedules);
-				//System.out.println(schedule.classSchedules);
-				
-				// Esto lo tengo que hacer para mostrar que sí funciona el algoritmo, al llamar la función de
-				// printPossibleSchedules() el problema es que no imprime como se debería porque está agarrando
-				// schedule como puntero y lo que imprimimos es el schedule que vaciamos con schedule.deleteClassSchedule
-				//printSchedule(tempSchedule);
-				//printSchedule(schedule);
 			} catch (CloneNotSupportedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
 			
 		}
 		else {
@@ -70,17 +71,16 @@ public class Scheduler {
 		
 	public void printPossibleSchedules() {
 		for(Schedule schedule: possibleSchedules) {
-			for(ClassSchedule classSchedule: schedule.classSchedules) 
-				System.out.println(schedule + ": " + classSchedule.teacher.name);
-			//System.out.println(schedule);
-			System.out.println(schedule.classSchedules);
+			for(ClassSchedule classSchedule: schedule.getClassSchedules()) 
+				System.out.println(schedule + ": " + classSchedule.getTeacher().getName());
+			System.out.println(schedule.getClassSchedules());
 			System.out.println("------------------------------------------------------------");
 		}
 	}
 	
 	public void printSchedule(Schedule schedule) {
-		for(ClassSchedule classSchedule: schedule.classSchedules) 
-			System.out.println(schedule + ": " + classSchedule.teacher.name);
+		for(ClassSchedule classSchedule: schedule.getClassSchedules()) 
+			System.out.println(schedule + ": " + classSchedule.getTeacher().getName());
 		System.out.println("============================================================");
 	}
 	
@@ -98,23 +98,23 @@ public class Scheduler {
             for (int j = i + 1; j < possibleSchedules.size(); j++) {
             	
             	if(category == SortCategory.BUENO) {
-            		if (possibleSchedules.get(j).buenos < possibleSchedules.get(index).buenos) 
+            		if (possibleSchedules.get(j).getBuenos() < possibleSchedules.get(index).getBuenos()) 
             			index = j;
             		
             	} else if(category == SortCategory.BARCO) {
-            		if (possibleSchedules.get(j).barcos < possibleSchedules.get(index).barcos) 
+            		if (possibleSchedules.get(j).getBarcos() < possibleSchedules.get(index).getBarcos()) 
             			index = j;
             	
             	} else if(category == SortCategory.DAYSTOGO) {
-            		if (possibleSchedules.get(j).daysToGo < possibleSchedules.get(index).daysToGo) 
+            		if (possibleSchedules.get(j).getDaysToGo() < possibleSchedules.get(index).getDaysToGo()) 
             			index = j;
             	
             	} else if(category == SortCategory.HUECO) {
-            		if (possibleSchedules.get(j).huecos < possibleSchedules.get(index).huecos)
+            		if (possibleSchedules.get(j).getHuecos() < possibleSchedules.get(index).getHuecos())
                         index = j;
             		
             	} else if(category == SortCategory.MAMON) {
-            		if (possibleSchedules.get(j).mamones < possibleSchedules.get(index).mamones)
+            		if (possibleSchedules.get(j).getMamones() < possibleSchedules.get(index).getMamones())
                         index = j;
             		
             	}

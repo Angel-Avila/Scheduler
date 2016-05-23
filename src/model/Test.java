@@ -1,6 +1,8 @@
-package model;
+/*package model;
 
 import java.util.ArrayList;
+
+import controller.Scheduler;
 
 public class Test {
 
@@ -36,7 +38,7 @@ public class Test {
 		herramientasDisenioSchedules.get(3).setTeacher(new Teacher("MAYA NAVARRO JORGE ARTURO"), new boolean[]{false,false,false});
 		*/
 		// MARK: - Schedules for "Diseño de Software"
-		
+		/*
 		disenioSoftwareSchedules.add(new ClassSchedule(disenioSoftware, new ArrayList<ClassHour>()));	
 		disenioSoftwareSchedules.get(0).addClassHour(new ClassHour(7, 9, disenioSoftware, Day.TUESDAY));
 		disenioSoftwareSchedules.get(0).addClassHour(new ClassHour(7, 9, disenioSoftware, Day.FRIDAY));
@@ -54,4 +56,4 @@ public class Test {
 		scheduler.printPossibleSchedules();
 	}
 	
-}
+}*/

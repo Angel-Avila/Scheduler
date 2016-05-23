@@ -16,6 +16,26 @@ public class Teacher {
 		this.mamon = mamon;
 	}
 	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setBarco(boolean barco) {
+		this.barco = barco;
+	}
+
+	public void setBueno(boolean bueno) {
+		this.bueno = bueno;
+	}
+
+	public void setMamon(boolean mamon) {
+		this.mamon = mamon;
+	}
+
 	public boolean isBarco() {
 		return barco;
 	}

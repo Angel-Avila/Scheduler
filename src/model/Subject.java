@@ -6,4 +6,8 @@ public class Subject {
 	public Subject(String subjectName) {
 		name = subjectName;
 	}
+	
+	public String getName() {
+		return name;
+	}
 }

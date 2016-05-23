@@ -39,7 +39,8 @@ public class Schedule implements Cloneable {
 		daysToGo = schedule.getDaysToGo();
 	}
 
-	protected ArrayList<ClassSchedule> extracted(Schedule schedule) {
+	@SuppressWarnings("unchecked")
+	public ArrayList<ClassSchedule> extracted(Schedule schedule) {
 		return (ArrayList<ClassSchedule>) schedule.getClassSchedules().clone();
 	}
 	
@@ -99,7 +100,7 @@ public class Schedule implements Cloneable {
 		this.daysToGo = daysToGo;
 	}
 
-	protected boolean insertClassSchedule(ClassSchedule classSchedule) {
+	public boolean insertClassSchedule(ClassSchedule classSchedule) {
 		for(ClassHour class1: classSchedule.classes) {
 			for(ClassSchedule tempSchedule: classSchedules) {
 				for(ClassHour class2: tempSchedule.classes) {
@@ -119,7 +120,7 @@ public class Schedule implements Cloneable {
 		return true;
 	}
 	
-	protected void deleteClassSchedule(ClassSchedule classSchedule) {
+	public void deleteClassSchedule(ClassSchedule classSchedule) {
 		classSchedules.remove(classSchedule);
 		
 		for(ClassHour class1: classSchedule.classes) {
@@ -166,7 +167,7 @@ public class Schedule implements Cloneable {
 	       return x>min && x<=max;    
 	}
 	
-	protected void getSum() {
+	public void getSum() {
 		for(ClassDay day: schoolWeek) {
 			
 			if(day.isGoing())
@@ -185,7 +186,7 @@ public class Schedule implements Cloneable {
 		}
 	}
 	
-	protected Object clone() throws CloneNotSupportedException {
+	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 }
