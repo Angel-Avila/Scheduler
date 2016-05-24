@@ -4,8 +4,6 @@ import java.util.ArrayList;
 
 import controller.Scheduler;
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -24,13 +22,13 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import model.ClassHour;
 import model.ClassSchedule;
 import model.Day;
 import model.Subject;
 import model.Teacher;
+import util.Utils;
 
 public class UIView extends Application {
 	
@@ -38,6 +36,8 @@ public class UIView extends Application {
 	
 	Button addSubject;
 	Button deleteSubject;
+	Button addSubjectSchedule;
+	Button deleteSubjectSchedule;
 	//ListView<String> classSchedulesList;
 	TreeView<String> classSchedulesList;
 	Stage window;
@@ -96,14 +96,14 @@ public class UIView extends Application {
 		scheduler.calcAllPossibleSchedules();
 		scheduler.printPossibleSchedules();
 		
-		// MARK: - UI
+		// MARK: - UI ================================================================================================
 		
 		window = primaryStage;
 		window.setTitle("Scheduler");
 		
 		window.setOnCloseRequest(e -> closeProgram());
 		
-		// MARK: - Menu Bar
+		// MARK: - Menu Bar ================================================================================================
 		
 		MenuBar menuBar = new MenuBar();
 		
@@ -144,7 +144,7 @@ public class UIView extends Application {
 		
 		menuBar.getMenus().addAll(fileMenu, editMenu, viewMenu);
 
-		// MARK: - TreeView
+		// MARK: - TreeView ================================================================================================
 		
 		TreeItem<String> root;
 		
@@ -153,7 +153,7 @@ public class UIView extends Application {
 		
 		for(ArrayList<ClassSchedule> possibleSchedules: scheduler.getWantedClassesSchedules()) {
 			for(ClassSchedule schedule: possibleSchedules) {
-				TreeItem<String> schedLeaf = new TreeItem<>(capitalize(schedule.getTeacher().getName().toLowerCase()));
+				TreeItem<String> schedLeaf = new TreeItem<>(Utils.capitalize(schedule.getTeacher().getName().toLowerCase()));
 				boolean found = false;
 				
 				for(TreeItem<String> subjectNode: root.getChildren()) {
@@ -176,35 +176,36 @@ public class UIView extends Application {
 		
 		classSchedulesList = new TreeView<>(root);
 		classSchedulesList.setShowRoot(false);
-		
-		classSchedulesList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
-			
-			 public void changed(ObservableValue<?> observable, Object oldValue,
-		                Object newValue) {
-
-		            @SuppressWarnings("unchecked")
-					TreeItem<String> selectedItem = (TreeItem<String>) newValue;
-		            
-		            if(selectedItem.getParent().getValue() == null)
-		            	return;
-		            
-		            System.out.println("Teacher: " + selectedItem.getValue() + " for " + selectedItem.getParent().getValue());
-		            
-		            // Display teacher's schedule for the given class
-		            
-		        }
-			
-		});
 				
-		// MARK: - Right pane
+		// MARK: - Right pane ================================================================================================
 		
 		addSubject = new Button("+Añadir Clase");
 		deleteSubject = new Button("-Borrar Clase");
+		addSubjectSchedule = new Button("+Añadir Horario");
+		deleteSubjectSchedule = new Button("-Borrar Horario");
+		
+		addSubject.setMinWidth(117);
+		deleteSubject.setMinWidth(117);
+		addSubjectSchedule.setMaxWidth(117);
+		deleteSubjectSchedule.setMinWidth(117);
+		
+		addSubjectSchedule.setVisible(false);
+		deleteSubjectSchedule.setVisible(false);
+		
 		
 		addSubject.setOnAction(e -> {
-			setUserAgentStylesheet(STYLESHEET_CASPIAN);
-			
+			//setUserAgentStylesheet(STYLESHEET_CASPIAN);
+			Subject subject = UIAddSubjectView.display();
+			if(subject.getName().length() > 0) {
+				ArrayList<ClassSchedule> temp = new ArrayList<>();
+				temp.add(new ClassSchedule(subject, new ArrayList<ClassHour>()));
+				scheduler.addWantedClassSchedule(temp);
+				
+				Utils.makeBranch(subject.getName(), root);
+				scheduler.printWantedClasses();
+			}
 		});
+		
 		
 		deleteSubject.setOnAction(e -> {
 			
@@ -212,9 +213,9 @@ public class UIView extends Application {
 		
 		VBox rightMenu = new VBox(10);
 		rightMenu.setPadding(new Insets(20, 20, 20, 20));
-		rightMenu.getChildren().addAll(addSubject, deleteSubject);
+		rightMenu.getChildren().addAll(addSubject, deleteSubject, addSubjectSchedule, deleteSubjectSchedule);
 
-		// MARK: - Center Pane
+		// MARK: - Center Pane ================================================================================================
 		
 		GridPane grid = new GridPane();
 		grid.setPadding(new Insets(10, 10, 10, 10));
@@ -251,42 +252,107 @@ public class UIView extends Application {
 		GridPane.setConstraints(h6, 0, 6);
 		GridPane.setConstraints(h8, 0, 7);
 		
-		int dayW = 70;
-		int timeH = 20;
 		grid.getColumnConstraints().add(new ColumnConstraints(95));
-		grid.getColumnConstraints().add(new ColumnConstraints(dayW));
-		grid.getColumnConstraints().add(new ColumnConstraints(dayW));
-		grid.getColumnConstraints().add(new ColumnConstraints(dayW));
-		grid.getColumnConstraints().add(new ColumnConstraints(dayW));
-		grid.getColumnConstraints().add(new ColumnConstraints(dayW));
-		grid.getColumnConstraints().add(new ColumnConstraints(dayW));
-		grid.getRowConstraints().add(new RowConstraints(timeH));
-		grid.getRowConstraints().add(new RowConstraints(timeH));
-		grid.getRowConstraints().add(new RowConstraints(timeH));
-		grid.getRowConstraints().add(new RowConstraints(timeH));
-		grid.getRowConstraints().add(new RowConstraints(timeH));
-		grid.getRowConstraints().add(new RowConstraints(timeH));
-		grid.getRowConstraints().add(new RowConstraints(timeH));
-		grid.getRowConstraints().add(new RowConstraints(timeH));
-		//grid.setGridLinesVisible(true);
-		
+		for(int i = 0; i < 6; i++)
+			grid.getColumnConstraints().add(new ColumnConstraints(70));
+
+		for(int i = 0; i < 8; i++)
+			grid.getRowConstraints().add(new RowConstraints(20));
+
 		ArrayList<UIClassHour> monUIHours = new ArrayList<>();
-		createAndAddToGrid(monUIHours, 1, Color.CORAL, grid);
+		Utils.createAndAddToGrid(monUIHours, 1, Color.CORAL, grid);
 		ArrayList<UIClassHour> tueUIHours = new ArrayList<>();
-		createAndAddToGrid(tueUIHours, 2, Color.LIGHTBLUE, grid);
+		Utils.createAndAddToGrid(tueUIHours, 2, Color.LIGHTBLUE, grid);
 		ArrayList<UIClassHour> wedUIHours = new ArrayList<>();
-		createAndAddToGrid(wedUIHours, 3, Color.MEDIUMPURPLE, grid);
+		Utils.createAndAddToGrid(wedUIHours, 3, Color.MEDIUMPURPLE, grid);
 		ArrayList<UIClassHour> thuUIHours = new ArrayList<>();
-		createAndAddToGrid(thuUIHours, 4, Color.ORANGE, grid);
+		Utils.createAndAddToGrid(thuUIHours, 4, Color.ORANGE, grid);
 		ArrayList<UIClassHour> friUIHours = new ArrayList<>();
-		createAndAddToGrid(friUIHours, 5, Color.LIGHTPINK, grid);
+		Utils.createAndAddToGrid(friUIHours, 5, Color.LIGHTPINK, grid);
 		ArrayList<UIClassHour> satUIHours = new ArrayList<>();
-		createAndAddToGrid(satUIHours, 6, Color.LIGHTGREEN, grid);
+		Utils.createAndAddToGrid(satUIHours, 6, Color.LIGHTGREEN, grid);
+		ArrayList<ArrayList<UIClassHour>> weekUIHours = new ArrayList<>();
+		weekUIHours.add(monUIHours);
+		weekUIHours.add(tueUIHours);
+		weekUIHours.add(wedUIHours);
+		weekUIHours.add(thuUIHours);
+		weekUIHours.add(friUIHours);
+		weekUIHours.add(satUIHours);
 		
 		grid.getChildren().addAll(monday, tuesday, wednesday, thursday, friday, saturday, h7, h9, h11, h1, h4, h6, h8);
 		grid.setId("monospaced");
 		
-		// MARK: - Border Pane
+		// MARK: - TreeView Listener ================================================================================================
+		
+		classSchedulesList.getSelectionModel().selectedItemProperty().addListener( (observable, oldValue, newValue) -> {
+	        
+			TreeItem<String> selectedItem = (TreeItem<String>) newValue;
+		            
+			// Meaning a subject was selected, not a teacher
+		    if(selectedItem.getParent().getValue() == null) {
+		    	addSubjectSchedule.setVisible(true);
+		    	deleteSubjectSchedule.setVisible(true);
+		    	Utils.colorUIClassHours(weekUIHours);
+		    	
+		    	addSubjectSchedule.setOnAction(e -> {
+		    		// Get reference for the classSchedules of the selected subject
+		    		ArrayList<ClassSchedule> scheds = scheduler.getClassSchedules(selectedItem.getValue());
+		    		// Get reference of the selected subject 
+		    		Subject sub = scheduler.getSubject(selectedItem.getValue());
+		    		// Display the view to add the schedule and teacher for the selected subject and get it returned
+					ClassSchedule classSched = UIAddSubjectScheduleView.display(sub);
+					
+					// Because of the onAction of adding a subject and structure of the code, the first element in the list of 
+					// schedules for a new subject is null so we get rid of that annoyance by inserting the new schedule there
+					if(scheds.size() == 1 && scheds.get(0).getTeacher() == null)
+						scheds.set(0, classSched);
+					// if schedules have already been inserted to this subject, we just add it to the list
+					else
+						scheds.add(classSched);
+					
+					// finally we add it to our treeView
+					Utils.makeBranch(Utils.capitalize(classSched.getTeacher().getName().toLowerCase()), selectedItem);
+				});
+				
+				deleteSubjectSchedule.setOnAction(e -> {
+					
+				});
+		    	
+		    	return;
+		    }
+		    
+		    // This runs only when a teacher was selected:
+		    
+		    addSubjectSchedule.setVisible(false);
+		    deleteSubjectSchedule.setVisible(false);
+		    
+            System.out.println("Teacher: " + selectedItem.getValue() + " for " + selectedItem.getParent().getValue());
+		            
+            // Display teacher's schedule for the given class
+            Utils.colorUIClassHours(weekUIHours);
+           
+            for(ArrayList<ClassSchedule> wantedSchedules: scheduler.getWantedClassesSchedules()) {
+    			for(ClassSchedule schedule: wantedSchedules) {
+    				
+    				if (selectedItem.getValue().equals(Utils.capitalize(schedule.getTeacher().getName().toLowerCase())) &&
+    						selectedItem.getParent().getValue().equals(schedule.getSubject().getName())) {
+    				
+    					for(ClassHour hour: schedule.getClasses()) {
+    						System.out.println(hour.toString());
+    						int[] y = Utils.getYforHour(hour);
+    						weekUIHours.get(Utils.getXforDay(hour)).get(y[0]).setColor(Color.DARKRED);
+    						if(y[1] != -1) {
+    							for(int i = y[0]; i <= y[1]; i++) 
+    								weekUIHours.get(Utils.getXforDay(hour)).get(i).setColor(Color.DARKRED);
+    						}
+    					}
+    					
+    				}
+    			}
+            }
+		});
+		
+		// MARK: - Border Pane ================================================================================================
 		
 		BorderPane borderPane = new BorderPane();
 		borderPane.setTop(menuBar);
@@ -294,7 +360,7 @@ public class UIView extends Application {
 		borderPane.setCenter(grid);
 		borderPane.setRight(rightMenu);
 		
-		Scene scene = new Scene(borderPane, 1070, 520);
+		Scene scene = new Scene(borderPane, 1090, 520);
 		scene.getStylesheets().add("style.css");
 		window.setScene(scene);
 		
@@ -305,35 +371,5 @@ public class UIView extends Application {
 	private void closeProgram() {
 		System.out.println("Schedules saved!");
 		window.close();
-	}
-	
-	@SuppressWarnings("unused")
-	private TreeItem<String> makeBranch(String title, TreeItem<String> parent) {
-		TreeItem<String> item = new TreeItem<>(title);
-		item.setExpanded(true);
-		parent.getChildren().add(item);
-		return item;
-	}
-	
-	private String capitalize(String givenString) {
-		String[] arr = givenString.split(" ");
-	    StringBuffer sb = new StringBuffer();
-
-	    for (int i = 0; i < arr.length; i++) {
-	        sb.append(Character.toUpperCase(arr[i].charAt(0)))
-	            .append(arr[i].substring(1)).append(" ");
-	    }
-	    
-	    return sb.toString().trim();
-	}
-	
-	private void createAndAddToGrid(ArrayList<UIClassHour> hours, int row, Color color, GridPane grid) {
-		for (int i = 0; i < 7; i++) 
-			hours.add(new UIClassHour(row, i + 1, color));
-		
-		for (UIClassHour hour: hours) {
-			GridPane.setConstraints(hour, hour.getX(), hour.getY());
-			grid.getChildren().add(hour);
-		}
 	}
 }

@@ -6,6 +6,8 @@ import java.util.Collections;
 import model.ClassSchedule;
 import model.Schedule;
 import model.SortCategory;
+import model.Subject;
+import model.Teacher;
 
 public class Scheduler {
 	
@@ -23,6 +25,52 @@ public class Scheduler {
 	
 	public ArrayList<ClassSchedule> getWantedClassSchedule(int i) {
 		return wantedClassesSchedules.get(i);
+	}
+	
+	public void printWantedClasses() {
+		for(ArrayList<ClassSchedule> wantedSchedules: wantedClassesSchedules) {
+			for(ClassSchedule schedule: wantedSchedules) {
+				System.out.println(schedule.getSubject().getName());
+			}
+		}
+	}
+	
+	public Teacher getTeacher(String name) {
+		
+		for(ArrayList<ClassSchedule> wantedSchedules: wantedClassesSchedules) {
+			for(ClassSchedule schedule: wantedSchedules) {
+				if(schedule.getTeacher().getName().equals(name)) 
+					return schedule.getTeacher();
+			}
+		}
+		
+		return null;
+	}
+	
+	public Subject getSubject(String name) {
+		
+		for(ArrayList<ClassSchedule> wantedSchedules: wantedClassesSchedules) {
+			for(ClassSchedule schedule: wantedSchedules) {
+				if(schedule.getSubject().getName().equals(name)) 
+					return schedule.getSubject();
+			}
+		}
+		
+		return null;
+	}
+	
+	public ArrayList<ClassSchedule> getClassSchedules(String subject) {
+		
+		for(ArrayList<ClassSchedule> wantedSchedules: wantedClassesSchedules) {
+			for(ClassSchedule schedule: wantedSchedules) {
+				if(schedule.getSubject().getName().equals(subject)) 
+					return wantedSchedules;
+				else
+					break;
+			}
+		}
+		
+		return null;
 	}
 	
 	public ArrayList<Schedule> getPossibleSchedules() {

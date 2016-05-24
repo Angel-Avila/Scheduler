@@ -10,6 +10,11 @@ public class Teacher {
 		this.name = name;
 	}
 	
+	public Teacher(String name, boolean barco, boolean bueno, boolean mamon) {
+		this.name = name;
+		setValues(barco, bueno, mamon);
+	}
+	
 	public void setValues(boolean barco, boolean bueno, boolean mamon) {
 		this.barco = barco;
 		this.bueno = bueno;

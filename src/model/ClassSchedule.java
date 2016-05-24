@@ -8,9 +8,19 @@ public class ClassSchedule {
 	protected Teacher teacher;
 	protected ArrayList<ClassHour> classes;
 	
+	public ClassSchedule() {
+		
+	}
+	
 	public ClassSchedule(Subject subject, ArrayList<ClassHour> classes) {
 		this.subject = subject;
 		this.classes = classes;
+	}
+	
+	public ClassSchedule(Subject subject, Teacher teacher, ArrayList<ClassHour> classes) {
+		this.subject = subject;
+		this.classes = classes;
+		this.teacher = teacher;
 	}
 	
 	public Subject getSubject() {
@@ -48,5 +58,9 @@ public class ClassSchedule {
 	
 	public void setTeacherAtributes(boolean[] teacherAtributes) {
 		teacher.setValues(teacherAtributes[0], teacherAtributes[1], teacherAtributes[2]);
+	}
+	
+	public String toString() {
+		return "Subject: " + subject.getName() + ", Teacher: " + teacher.getName();
 	}
 }

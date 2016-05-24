@@ -18,4 +18,54 @@ public class ClassHour {
 		this.subject = subject;
 		this.day = day;
 	}
+
+	public String toString() {
+		return getDayString() + ": " + (start >= 10 ? start: ("0" + start)) + ":00-" + (end >= 10 ? end: ("0" + end)) + ":00";
+	}
+	
+	public int getStart() {
+		return start;
+	}
+
+	public void setStart(int start) {
+		this.start = start;
+	}
+
+	public int getEnd() {
+		return end;
+	}
+
+	public void setEnd(int end) {
+		this.end = end;
+	}
+
+	public Subject getSubject() {
+		return subject;
+	}
+
+	public void setSubject(Subject subject) {
+		this.subject = subject;
+	}
+
+	public Day getDay() {
+		return day;
+	}
+
+	public void setDay(Day day) {
+		this.day = day;
+	}
+	
+	public String getDayString() {
+		if(day == Day.MONDAY)
+			return "Lunes";
+		if(day == Day.TUESDAY)
+			return "Martes";
+		if(day == Day.WEDNESDAY)
+			return "Miércoles";
+		if(day == Day.THURSDAY)
+			return "Jueves";
+		if(day == Day.FRIDAY)
+			return "Viernes";
+		return "Sábado";
+	}
 }
