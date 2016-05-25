@@ -82,6 +82,7 @@ public class Scheduler {
 	}
 
 	public void calcAllPossibleSchedules() {
+		possibleSchedules = new ArrayList<>();
 		backTrack(new Schedule(), 0, wantedClassesSchedules.size());
 	}
 	
@@ -98,6 +99,10 @@ public class Scheduler {
 			try {
 				Schedule tempSchedule = (Schedule) schedule.clone();
 				tempSchedule.setClassSchedules(schedule.extracted(schedule));
+				tempSchedule.getSum();
+				System.out.println("DTG: " + tempSchedule.getDaysToGo());
+				System.out.println("Huecos: " + tempSchedule.getHuecos());
+				System.out.println("TEMPSCHEDULE HERE ********" + tempSchedule);
 				possibleSchedules.add(tempSchedule);
 			} catch (CloneNotSupportedException e) {
 				e.printStackTrace();
@@ -138,7 +143,7 @@ public class Scheduler {
 		}
 	}
 	
-	public void sortBy(SortCategory category){
+	public void sortByLess(SortCategory category){
         
         for (int i = 0; i < possibleSchedules.size() - 1; i++)
         {
@@ -163,6 +168,42 @@ public class Scheduler {
             		
             	} else if(category == SortCategory.MAMON) {
             		if (possibleSchedules.get(j).getMamones() < possibleSchedules.get(index).getMamones())
+                        index = j;
+            		
+            	}
+                
+            }
+            
+            Collections.swap(possibleSchedules, i, index);
+        }
+        
+    }
+	
+public void sortByMore(SortCategory category){
+        
+        for (int i = 0; i < possibleSchedules.size() - 1; i++)
+        {
+            int index = i;
+            for (int j = i + 1; j < possibleSchedules.size(); j++) {
+            	
+            	if(category == SortCategory.BUENO) {
+            		if (possibleSchedules.get(j).getBuenos() > possibleSchedules.get(index).getBuenos()) 
+            			index = j;
+            		
+            	} else if(category == SortCategory.BARCO) {
+            		if (possibleSchedules.get(j).getBarcos() > possibleSchedules.get(index).getBarcos()) 
+            			index = j;
+            	
+            	} else if(category == SortCategory.DAYSTOGO) {
+            		if (possibleSchedules.get(j).getDaysToGo() > possibleSchedules.get(index).getDaysToGo()) 
+            			index = j;
+            	
+            	} else if(category == SortCategory.HUECO) {
+            		if (possibleSchedules.get(j).getHuecos() > possibleSchedules.get(index).getHuecos())
+                        index = j;
+            		
+            	} else if(category == SortCategory.MAMON) {
+            		if (possibleSchedules.get(j).getMamones() > possibleSchedules.get(index).getMamones())
                         index = j;
             		
             	}

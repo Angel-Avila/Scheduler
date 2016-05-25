@@ -7,3 +7,47 @@
 	-fx-stroke-width: 2;
 	fx-stroke: black;
 }
+
+#rich-blue {
+    -fx-background-color: #395cab;
+    -fx-background-insets: 0,1,2,3;
+    -fx-background-radius: 0;
+    -fx-padding: 0 0 0 0;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER;
+    -fx-font-size: 22px;
+}
+
+#rich-blue-selected {
+    -fx-background-color: #2d4786;
+    -fx-background-insets: 0,1,2,3;
+    -fx-background-radius: 0;
+    -fx-padding: 0 0 0 0;
+    -fx-text-fill: grey;
+    -fx-font-size: 22px;
+    -fx-alignment: CENTER;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+}
+
+#rich-red {
+    -fx-background-color: #b32400;
+    -fx-background-insets: 0,1,2,3;
+    -fx-background-radius: 0;
+    -fx-padding: 0 0 0 0;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 22px;
+    -fx-alignment: CENTER;
+}
+
+#rich-red-selected {
+    -fx-background-color: #661400;
+    -fx-background-insets: 0,1,2,3;
+    -fx-background-radius: 0;
+    -fx-padding: 0 0 0 0;
+    -fx-text-fill: grey;
+    -fx-font-size: 22px;
+    -fx-alignment: CENTER;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+}

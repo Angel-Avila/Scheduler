@@ -5,6 +5,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 
 public class UIClassHour extends StackPane {
 	
@@ -13,6 +16,7 @@ public class UIClassHour extends StackPane {
 	private Color color;
 	private final Color originalColor;
 	private boolean selected;
+	private Text text = new Text();
 	
 	public UIClassHour(int x, int y, Color color) {
 		this.x = x;
@@ -23,8 +27,8 @@ public class UIClassHour extends StackPane {
 		selected = false;
 		
 		border.setFill(color);
-		
-		getChildren().add(border);
+		border.setStroke(originalColor);
+		getChildren().addAll(border, text);
 	}
 	
 	public UIClassHour(int x, int y, Color color, EventHandler<? super MouseEvent> value) {
@@ -34,9 +38,9 @@ public class UIClassHour extends StackPane {
 		this.originalColor = color;
 		
 		border.setFill(color);
-		
+		border.setStroke(originalColor);
 		setOnMouseClicked(value);
-		getChildren().add(border);
+		getChildren().addAll(border, text);
 	}
 
 	public int getX() {
@@ -62,10 +66,12 @@ public class UIClassHour extends StackPane {
 	public void setColor(Color color) {
 		this.color = color;
 		border.setFill(color);
+		border.setStroke(color);
 	}
 	
 	public void revertColor() {
 		border.setFill(originalColor);
+		border.setStroke(originalColor);
 	}
 	
 	public boolean isSelected() {
@@ -78,5 +84,16 @@ public class UIClassHour extends StackPane {
 	
 	public void onMouseClicked(EventHandler<? super MouseEvent> value) {
 		setOnMouseClicked(value);
+	}
+	
+	public void setText(String text) {
+		this.text.setVisible(true);
+		this.text.setText(text);
+		this.text.setFont(Font.font("Helvetica", FontWeight.BOLD, 12));
+		this.text.setFill(Color.WHITE);
+	}
+	
+	public void hideText() {
+		text.setVisible(false);
 	}
 }

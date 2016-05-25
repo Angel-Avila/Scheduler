@@ -3,7 +3,6 @@ package model;
 public class ClassDay {
 	protected Day day;
 	protected ClassHour[] hours;
-	private int numberOfClasses;
 	
 	public ClassDay(Day day) {
 		this.day = day;
@@ -12,8 +11,19 @@ public class ClassDay {
 		for (int i = 0; i < hours.length; i++) {
 			hours[i] = new ClassHour(this.day);
  		}
+	}
+	
+	public String toString() {
+		StringBuilder str = new StringBuilder();
 		
-		numberOfClasses = 0;
+		for(ClassHour hour: hours) {
+			if(hour.start != -1) {
+				str.append(hour.toString());
+				str.append('\n');
+			}
+		}
+		
+		return str.toString();
 	}
 	
 	public Day getDay() {
@@ -33,26 +43,27 @@ public class ClassDay {
 	}
 
 	public boolean isGoing() {
-		return numberOfClasses > 0;
+		for(ClassHour hour: hours)
+			if(hour.start != -1)
+				return true;
+		
+		return false;
 	}
 	
 	public void addHour(int start, int end, Subject subject, Day day) {
 		int index = getIndex(start);
 		
 		hours[index] = new ClassHour(start, end, subject, day);
-		numberOfClasses++;
 	}
 	
 	public void addHour(ClassHour hour) {
 		hours[getIndex(hour.start)] = hour;
-		numberOfClasses++;
 	}
 	
 	public void deleteHour(int start) {
 		int index = getIndex(start);
 		
 		hours[index] = new ClassHour(this.day);
-		numberOfClasses--;
 	}
 	
 	public void deleteHour(ClassHour hour) {
@@ -61,30 +72,24 @@ public class ClassDay {
 	
 	public int getHuecos() {
 		int huecos = 0;
-		for(int i = 0; i < 7; i ++) {
+		for(int i = 0; i < 6; i ++) {
+			
 			if(hours[i].start != -1) {
-				boolean classBefore = false;
 				
-				for(int j = 0; j < i; j++) {
-					if(hours[j].start != -1) {
-						classBefore = true;
+				int tempHuecos = 0;
+				boolean classAfter = false;
+				
+				for(int j = i + 1; j < 7; j++) {
+					if(hours[j].start == -1)
+						tempHuecos++;
+					else {
+						classAfter = true;
 						break;
 					}
 				}
 				
-				if(classBefore) {
-					boolean classAfter = false;
-					
-					for(int j = i + 1; j < 7; j++) {
-						if(hours[j].start != -1) {
-							classAfter = true;
-							break;
-						}
-					}
-					
-					if(classBefore && classAfter)
-						huecos++;
-				}
+				if(classAfter)
+					huecos += tempHuecos;
 			}
 		}
 		return huecos;

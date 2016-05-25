@@ -38,6 +38,15 @@ public class Schedule implements Cloneable {
 		buenos = schedule.getBuenos();
 		daysToGo = schedule.getDaysToGo();
 	}
+	
+	public String toString() {
+		StringBuilder str = new StringBuilder();
+		
+		for(ClassDay day: schoolWeek)
+			str.append(day.toString());
+		
+		return str.toString();
+	}
 
 	@SuppressWarnings("unchecked")
 	public ArrayList<ClassSchedule> extracted(Schedule schedule) {
@@ -166,7 +175,7 @@ public class Schedule implements Cloneable {
 	private boolean betweenExclusive_Inclusive (int x, int min, int max) {
 	       return x>min && x<=max;    
 	}
-	
+
 	public void getSum() {
 		for(ClassDay day: schoolWeek) {
 			
