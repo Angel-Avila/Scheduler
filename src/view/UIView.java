@@ -37,24 +37,34 @@ public class UIView extends Application {
 	
 	Scheduler scheduler;
 	
-	Button addSubject;
-	Button deleteSubject;
-	Button addSubjectSchedule;
-	Button deleteSubjectSchedule;
-	Button subjectsView;
-	Button schedulesView;
+	Button addSubjectBtn;
+	Button deleteSubjectBtn;
+	Button addSubjectScheduleBtn;
+	Button deleteSubjectScheduleBtn;
+	Button subjectsViewBtn;
+	Button schedulesViewBtn;
 	
-	Button sortBarco;
-	Button sortBueno;
-	Button sortMamon;
-	Button sortDTG;
-	Button sortHuecos;
+	Button sortBarcoBtn;
+	Button sortBuenoBtn;
+	Button sortMamonBtn;
+	Button sortDTGBtn;
+	Button sortHuecosBtn;
+	
+	Color[] colors;
 	
 	Label sortLabel;
 	
 	TreeView<String> subjectsTreeview;
 	ListView<String> possibleSchedsLV;
 	BorderPane borderPane;
+	
+	ArrayList<ArrayList<UIClassHour>> weekUIHours;
+	
+	VBox rightMenuSubjects;
+	VBox rightMenuSchedules;
+	
+	RadioMenuItem subjectsViewMenu;
+	RadioMenuItem schedulesViewMenu;
 	
 	boolean subjectsSelected;
 	boolean schedulesSelected;
@@ -76,6 +86,23 @@ public class UIView extends Application {
 		
 		scheduler = new Scheduler();
 		
+		colors = new Color[15];
+		colors[0] = Color.CHOCOLATE;
+		colors[1] = Color.STEELBLUE;
+		colors[2] = Color.LIMEGREEN;
+		colors[3] = Color.DARKVIOLET;
+		colors[4] = Color.DEEPSKYBLUE;
+		colors[5] = Color.DARKRED;
+		colors[6] = Color.CORAL;
+		colors[7] = Color.MEDIUMPURPLE;
+		colors[8] = Color.YELLOW;
+		colors[9] = Color.DEEPPINK;
+		colors[10] = Color.BURLYWOOD;
+		colors[11] = Color.ORANGERED;
+		colors[12] = Color.MAGENTA;
+		colors[13] = Color.SIENNA;
+		colors[14] = Color.MEDIUMSEAGREEN;
+		
 		Subject herramientasDisenio = new Subject("Herramientas Diseño");
 		Subject disenioSoftware = new Subject("Diseño de Software");
 		
@@ -92,7 +119,7 @@ public class UIView extends Application {
 		herramientasDisenioSchedules.get(1).addClassHour(new ClassHour(7, 9, herramientasDisenio, Day.MONDAY));
 		herramientasDisenioSchedules.get(1).addClassHour(new ClassHour(7, 9, herramientasDisenio, Day.THURSDAY));
 		herramientasDisenioSchedules.get(1).setTeacher(new Teacher("MAYA NAVARRO JORGE ARTURO"), new boolean[]{false,false,false});
-		/*
+		
 		herramientasDisenioSchedules.add(new ClassSchedule(herramientasDisenio, new ArrayList<ClassHour>()));
 		herramientasDisenioSchedules.get(2).addClassHour(new ClassHour(13, 15, herramientasDisenio, Day.MONDAY));
 		herramientasDisenioSchedules.get(2).addClassHour(new ClassHour(13, 15, herramientasDisenio, Day.THURSDAY));
@@ -102,7 +129,7 @@ public class UIView extends Application {
 		herramientasDisenioSchedules.get(3).addClassHour(new ClassHour(18, 20, herramientasDisenio, Day.TUESDAY));
 		herramientasDisenioSchedules.get(3).addClassHour(new ClassHour(18, 20, herramientasDisenio, Day.THURSDAY));
 		herramientasDisenioSchedules.get(3).setTeacher(new Teacher("MAYA NAVARRO JORGE ARTURO"), new boolean[]{false,false,false});
-		*/
+		
 		// MARK: - Schedules for "Diseño de Software"
 		
 		disenioSoftwareSchedules.add(new ClassSchedule(disenioSoftware, new ArrayList<ClassHour>()));	
@@ -158,8 +185,10 @@ public class UIView extends Application {
 		Menu viewMenu = new Menu("_View");
 		ToggleGroup viewToggle = new ToggleGroup();
 		
-		RadioMenuItem subjectsViewMenu = new RadioMenuItem("Clases");
-		RadioMenuItem schedulesViewMenu = new RadioMenuItem("Horarios");
+		subjectsViewMenu = new RadioMenuItem("Clases");
+		schedulesViewMenu = new RadioMenuItem("Horarios");
+		subjectsViewMenu.setOnAction(e -> viewSubjects());
+		schedulesViewMenu.setOnAction(e -> viewSchedules());
 		subjectsViewMenu.setToggleGroup(viewToggle);
 		schedulesViewMenu.setToggleGroup(viewToggle);
 		subjectsViewMenu.setSelected(true);
@@ -178,21 +207,29 @@ public class UIView extends Application {
 		
 		for(ArrayList<ClassSchedule> possibleSchedules: scheduler.getWantedClassesSchedules()) {
 			for(ClassSchedule schedule: possibleSchedules) {
-				TreeItem<String> schedLeaf = new TreeItem<>(Utils.capitalize(schedule.getTeacher().getName().toLowerCase()));
-				boolean found = false;
+				TreeItem<String> teacherLeaf = new TreeItem<>(Utils.capitalize(schedule.getTeacher().getName().toLowerCase()));
+				boolean foundSubject = false;
+				boolean foundTeacher = false;
 				
 				for(TreeItem<String> subjectNode: rootSubjects.getChildren()) {
 					if(subjectNode.getValue().contentEquals(schedule.getSubject().getName())) {
-						subjectNode.getChildren().add(schedLeaf);
-						found = true;
+						foundSubject = true;
+						
+						for(TreeItem<String> teacherNode: subjectNode.getChildren()) 
+							if(teacherNode.getValue().equals(Utils.capitalize(schedule.getTeacher().getName().toLowerCase())))
+								foundTeacher = true;
+						
+						if(!foundTeacher)
+							subjectNode.getChildren().add(teacherLeaf);
 						break;
 					}
+					
 				}
 				
-				if(!found) {
+				if(!foundSubject) {
 					TreeItem<String> subjectNode = new TreeItem<>(schedule.getSubject().getName());
 					rootSubjects.getChildren().add(subjectNode);
-					subjectNode.getChildren().add(schedLeaf);
+					subjectNode.getChildren().add(teacherLeaf);
 				}
 				
 			}
@@ -204,32 +241,32 @@ public class UIView extends Application {
 				
 		// MARK: - Right pane ================================================================================================
 		
-		addSubject = new Button("+Añadir Clase");
-		deleteSubject = new Button("-Borrar Clase");
-		addSubjectSchedule = new Button("+Añadir Horario");
-		deleteSubjectSchedule = new Button("-Borrar Horario");
+		addSubjectBtn = new Button("+Añadir Clase");
+		deleteSubjectBtn = new Button("-Borrar Clase");
+		addSubjectScheduleBtn = new Button("+Añadir Horario");
+		deleteSubjectScheduleBtn = new Button("-Borrar Horario");
 		
-		sortBarco = new Button("(+)Barcos");
-		sortBueno = new Button("(+)Buenos");
-		sortMamon = new Button("(+)Mamones");
-		sortDTG = new Button("(+)Días");
-		sortHuecos = new Button("(+)Huecos");
+		sortBarcoBtn = new Button("(+)Barcos");
+		sortBuenoBtn = new Button("(+)Buenos");
+		sortMamonBtn = new Button("(+)Mamones");
+		sortDTGBtn = new Button("(+)Días");
+		sortHuecosBtn = new Button("(+)Huecos");
 
 		sortLabel = new Label("Sorting by ");
 		
-		addSubject.setMinWidth(117);
-		deleteSubject.setMinWidth(117);
-		addSubjectSchedule.setMaxWidth(117);
-		deleteSubjectSchedule.setMinWidth(117);
+		addSubjectBtn.setMinWidth(117);
+		deleteSubjectBtn.setMinWidth(117);
+		addSubjectScheduleBtn.setMaxWidth(117);
+		deleteSubjectScheduleBtn.setMinWidth(117);
 		
-		sortBarco.setMinWidth(117);
-		sortBueno.setMinWidth(117);
-		sortMamon.setMinWidth(117);
-		sortDTG.setMinWidth(117);
-		sortHuecos.setMinWidth(117);
+		sortBarcoBtn.setMinWidth(117);
+		sortBuenoBtn.setMinWidth(117);
+		sortMamonBtn.setMinWidth(117);
+		sortDTGBtn.setMinWidth(117);
+		sortHuecosBtn.setMinWidth(117);
 		
-		addSubjectSchedule.setVisible(false);
-		deleteSubjectSchedule.setVisible(false);
+		addSubjectScheduleBtn.setVisible(false);
+		deleteSubjectScheduleBtn.setVisible(false);
 		
 		sortMostBa = false;
 		sortMostBu = false;
@@ -237,13 +274,13 @@ public class UIView extends Application {
 		sortMostD = false;
 		sortMostH = false;
 		
-		VBox rightMenuSubjects = new VBox(10);
+		rightMenuSubjects = new VBox(10);
 		rightMenuSubjects.setPadding(new Insets(20, 20, 20, 20));
-		rightMenuSubjects.getChildren().addAll(addSubject, deleteSubject, addSubjectSchedule, deleteSubjectSchedule);
+		rightMenuSubjects.getChildren().addAll(addSubjectBtn, deleteSubjectBtn, addSubjectScheduleBtn, deleteSubjectScheduleBtn);
 		
-		VBox rightMenuSchedules = new VBox(10);
+		rightMenuSchedules = new VBox(10);
 		rightMenuSchedules.setPadding(new Insets(20, 20, 20, 20));
-		rightMenuSchedules.getChildren().addAll(sortBarco, sortBueno, sortMamon, sortDTG, sortHuecos, sortLabel);
+		rightMenuSchedules.getChildren().addAll(sortBarcoBtn, sortBuenoBtn, sortMamonBtn, sortDTGBtn, sortHuecosBtn, sortLabel);
 
 		// MARK: - Center Pane ================================================================================================
 		
@@ -301,7 +338,7 @@ public class UIView extends Application {
 		Utils.createAndAddToGrid(friUIHours, 5, Color.LIGHTPINK, grid);
 		ArrayList<UIClassHour> satUIHours = new ArrayList<>();
 		Utils.createAndAddToGrid(satUIHours, 6, Color.LIGHTGREEN, grid);
-		ArrayList<ArrayList<UIClassHour>> weekUIHours = new ArrayList<>();
+		weekUIHours = new ArrayList<>();
 		weekUIHours.add(monUIHours);
 		weekUIHours.add(tueUIHours);
 		weekUIHours.add(wedUIHours);
@@ -322,17 +359,17 @@ public class UIView extends Application {
 		subjectsSelected = true;
 		schedulesSelected = false;
 		
-		subjectsView = new Button("Clases");
-		schedulesView = new Button("Horarios");
-		subjectsView.setId("rich-blue");
-		schedulesView.setId("rich-red-selected");
-		subjectsView.setMinWidth(545);
-		schedulesView.setMinWidth(545);
-		subjectsView.setMinHeight(40);
-		schedulesView.setMinHeight(40);
+		subjectsViewBtn = new Button("Clases");
+		schedulesViewBtn = new Button("Horarios");
+		subjectsViewBtn.setId("rich-blue");
+		schedulesViewBtn.setId("rich-red-selected");
+		subjectsViewBtn.setMinWidth(545);
+		schedulesViewBtn.setMinWidth(545);
+		subjectsViewBtn.setMinHeight(40);
+		schedulesViewBtn.setMinHeight(40);
 		
 		HBox bottomMenu = new HBox(0);
-		bottomMenu.getChildren().addAll(subjectsView, schedulesView);
+		bottomMenu.getChildren().addAll(subjectsViewBtn, schedulesViewBtn);
 		
 		// MARK: - Border Pane ================================================================================================
 		
@@ -345,7 +382,7 @@ public class UIView extends Application {
 		
 		// MARK: - On Actions
 		
-		addSubject.setOnAction(e -> {
+		addSubjectBtn.setOnAction(e -> {
 			//setUserAgentStylesheet(STYLESHEET_CASPIAN);
 			Subject subject = UIAddSubjectView.display();
 			if(subject.getName().length() > 0) {
@@ -354,118 +391,85 @@ public class UIView extends Application {
 				scheduler.addWantedClassSchedule(temp);
 				
 				Utils.makeBranch(subject.getName(), rootSubjects);
+				
 				scheduler.printWantedClasses();
 			}
 		});
 		
 		
-		deleteSubject.setOnAction(e -> {
+		deleteSubjectBtn.setOnAction(e -> {
 			
 		});
 		
-		subjectsView.setOnAction(e -> {
+		subjectsViewBtn.setOnAction(e -> {
 			System.out.println("blue");
-			if (!subjectsSelected) {
-				subjectsView.setId("rich-blue");
-				schedulesView.setId("rich-red-selected");
-				
-				borderPane.setLeft(subjectsTreeview);
-				borderPane.setRight(rightMenuSubjects);
-				
-				Utils.colorUIClassHours(weekUIHours);
-				Utils.hideTextUIClassHours(weekUIHours);
-				
-				subjectsSelected = true;
-				schedulesSelected = false;
-			}
+			viewSubjects();
 		});
 		
-		schedulesView.setOnAction(e -> {
+		schedulesViewBtn.setOnAction(e -> {
 			System.out.println("red");
-			if (!schedulesSelected) {
-				subjectsView.setId("rich-blue-selected");
-				schedulesView.setId("rich-red");
-				
-				borderPane.setLeft(possibleSchedsLV);
-				borderPane.setRight(rightMenuSchedules);
-				
-				Utils.colorUIClassHours(weekUIHours, Color.LIGHTGRAY);
-				Utils.hideTextUIClassHours(weekUIHours);
-				
-				scheduler.calcAllPossibleSchedules();
-				scheduler.sumAllSchedules();
-				
-				int size = possibleSchedsLV.getItems().size();
-				for (int i = 0; i < size; i++)
-					possibleSchedsLV.getItems().remove(0);
-				
-				for (int i = 0; i < scheduler.getPossibleSchedules().size(); i++)
-					possibleSchedsLV.getItems().add(Integer.toString(i + 1));
-				
-				subjectsSelected = false;
-				schedulesSelected = true;
-			}
+			viewSchedules();
 		});
 		
-		sortBarco.setOnAction(e -> {
+		sortBarcoBtn.setOnAction(e -> {
 			if(sortMostBa) {
 				scheduler.sortByLess(SortCategory.BARCO);
-				sortBarco.setText("(+)Barcos");
+				sortBarcoBtn.setText("(+)Barcos");
 				sortMostBa = false;
 			} else {
 				scheduler.sortByMore(SortCategory.BARCO);
-				sortBarco.setText("(-)Barcos");
+				sortBarcoBtn.setText("(-)Barcos");
 				sortMostBa = true;
 			}
 		});
 		
-		sortBueno.setOnAction(e -> {
+		sortBuenoBtn.setOnAction(e -> {
 			if(sortMostBu) {
 				scheduler.sortByLess(SortCategory.BUENO);
-				sortBueno.setText("(+)Buenos");
+				sortBuenoBtn.setText("(+)Buenos");
 				sortMostBu = false;
 			} else {
 				scheduler.sortByMore(SortCategory.BUENO);
-				sortBueno.setText("(-)Buenos");
+				sortBuenoBtn.setText("(-)Buenos");
 				sortMostBu = true;
 			}
 		});
 		
-		sortMamon.setOnAction(e -> {
+		sortMamonBtn.setOnAction(e -> {
 			if(sortMostMa) {
 				scheduler.sortByLess(SortCategory.MAMON);
-				sortMamon.setText("(+)Mamones");
+				sortMamonBtn.setText("(+)Mamones");
 				sortMostMa = false;
 			} else {
 				scheduler.sortByMore(SortCategory.MAMON);
-				sortMamon.setText("(-)Mamones");
+				sortMamonBtn.setText("(-)Mamones");
 				sortMostMa = true;
 			}
 		});
 		
-		sortDTG.setOnAction(e -> {
+		sortDTGBtn.setOnAction(e -> {
 			if(sortMostD) {
 				scheduler.sortByLess(SortCategory.DAYSTOGO);
-				sortDTG.setText("(+)Días");
+				sortDTGBtn.setText("(+)Días");
 				sortMostD = false;
 				sortLabel.setText("Sorting by less DTG");
 			} else {
 				scheduler.sortByMore(SortCategory.DAYSTOGO);
-				sortDTG.setText("(-)Días");
+				sortDTGBtn.setText("(-)Días");
 				sortMostD = true;
 				sortLabel.setText("Sorting by more DTG");
 			}
 		});
 		
-		sortHuecos.setOnAction(e -> {
+		sortHuecosBtn.setOnAction(e -> {
 			if(sortMostH) {
 				scheduler.sortByLess(SortCategory.HUECO);
-				sortHuecos.setText("(+)Huecos");
+				sortHuecosBtn.setText("(+)Huecos");
 				sortMostH = false;
 				sortLabel.setText("Sorting by less huecos");
 			} else {
 				scheduler.sortByMore(SortCategory.HUECO);
-				sortHuecos.setText("(-)Huecos");
+				sortHuecosBtn.setText("(-)Huecos");
 				sortMostH = true;
 				sortLabel.setText("Sorting by more huecos");
 			}
@@ -481,10 +485,10 @@ public class UIView extends Application {
 			
 			// Meaning a subject was selected, not a teacher
 		    if(selectedItem.getParent().getValue() == null) {
-		    	addSubjectSchedule.setVisible(true);
-		    	deleteSubjectSchedule.setVisible(true);
+		    	addSubjectScheduleBtn.setVisible(true);
+		    	deleteSubjectScheduleBtn.setVisible(true);
 		    	
-		    	addSubjectSchedule.setOnAction(e -> {
+		    	addSubjectScheduleBtn.setOnAction(e -> {
 		    		// Get reference for the classSchedules of the selected subject
 		    		ArrayList<ClassSchedule> scheds = scheduler.getClassSchedules(selectedItem.getValue());
 		    		// Get reference of the selected subject 
@@ -500,11 +504,18 @@ public class UIView extends Application {
 					else
 						scheds.add(classSched);
 			
-					// finally we add it to our treeView
-					Utils.makeBranch(Utils.capitalize(classSched.getTeacher().getName().toLowerCase()), selectedItem);
+					// We make sure the teacher isn't already in this branch by looking for it
+					boolean found = false;
+					for(TreeItem<String> teacherLeaf: selectedItem.getChildren()) 
+						if(teacherLeaf.getValue().contentEquals(Utils.capitalize(classSched.getTeacher().getName().toLowerCase()))) 
+							found = true;
+	
+					// Just if it wasn't found we add it to our TreeView
+					if (!found)
+						Utils.makeBranch(Utils.capitalize(classSched.getTeacher().getName().toLowerCase()), selectedItem);
 				});
 				
-				deleteSubjectSchedule.setOnAction(e -> {
+				deleteSubjectScheduleBtn.setOnAction(e -> {
 					
 				});
 		    	
@@ -513,23 +524,28 @@ public class UIView extends Application {
 		    
 		    // This runs only when a teacher was selected:
 		    
-		    addSubjectSchedule.setVisible(false);
-		    deleteSubjectSchedule.setVisible(false);
+		    addSubjectScheduleBtn.setVisible(false);
+		    deleteSubjectScheduleBtn.setVisible(false);
 		    
             System.out.println("Teacher: " + selectedItem.getValue() + " for " + selectedItem.getParent().getValue());
 		            
             // Display teacher's schedule for the given class           
             for(ArrayList<ClassSchedule> wantedSchedules: scheduler.getWantedClassesSchedules()) {
+            	int i = 1;
     			for(ClassSchedule schedule: wantedSchedules) {
     				try {
 	    				if (selectedItem.getValue().equals(Utils.capitalize(schedule.getTeacher().getName().toLowerCase())) &&
-	    						selectedItem.getParent().getValue().equals(schedule.getSubject().getName())) 
+	    						selectedItem.getParent().getValue().equals(schedule.getSubject().getName())) {
 	    				
-	    					Utils.displayClassSched(schedule, weekUIHours, Color.DARKRED);
+	    					
+	    					Utils.displayClassSched(schedule, weekUIHours, colors[5], Integer.toString(i));
+	    					i++;
+	    				}
     				} catch (NullPointerException e) {
     					
     				}
     			}
+    			
             }
 		});
 		
@@ -537,23 +553,7 @@ public class UIView extends Application {
 			
 			Utils.colorUIClassHours(weekUIHours, Color.LIGHTGRAY);
 			Utils.hideTextUIClassHours(weekUIHours);
-			
-			Color[] colors = new Color[15];
-			colors[0] = Color.CHOCOLATE;
-			colors[1] = Color.STEELBLUE;
-			colors[2] = Color.LIMEGREEN;
-			colors[3] = Color.DARKVIOLET;
-			colors[4] = Color.DEEPSKYBLUE;
-			colors[5] = Color.DARKRED;
-			colors[6] = Color.CORAL;
-			colors[7] = Color.MEDIUMPURPLE;
-			colors[8] = Color.YELLOW;
-			colors[9] = Color.DEEPPINK;
-			colors[10] = Color.BURLYWOOD;
-			colors[11] = Color.ORANGERED;
-			colors[12] = Color.MAGENTA;
-			colors[13] = Color.SIENNA;
-			colors[14] = Color.MEDIUMSEAGREEN;
+
 			/*
 			int o = 0;
 			for(Schedule schedule: scheduler.getPossibleSchedules()) {
@@ -562,9 +562,12 @@ public class UIView extends Application {
 				System.out.println("Days to Go: " +schedule.getDaysToGo());
 				System.out.println("Huecos: " + schedule.getHuecos());
 				System.out.println("SCHEDULE TO STRING: " + schedule.toString());
+				for(ClassDay day: schedule.getSchoolWeek()) {
+					System.out.println(day.toString());
+				}
 				o++;
-			}
-			*/
+			}*/
+			
 			try {
 				int selectedItem = Integer.parseInt(newValue) - 1;
 				
@@ -590,5 +593,49 @@ public class UIView extends Application {
 	private void closeProgram() {
 		System.out.println("Schedules saved!");
 		window.close();
+	}
+	
+	private void viewSubjects() {
+		if (!subjectsSelected) {
+			subjectsViewBtn.setId("rich-blue");
+			schedulesViewBtn.setId("rich-red-selected");
+			
+			borderPane.setLeft(subjectsTreeview);
+			borderPane.setRight(rightMenuSubjects);
+			
+			Utils.colorUIClassHours(weekUIHours);
+			Utils.hideTextUIClassHours(weekUIHours);
+			
+			subjectsSelected = true;
+			schedulesSelected = false;
+			subjectsViewMenu.setSelected(true);
+		}
+	}
+	
+	private void viewSchedules() {
+		if (!schedulesSelected) {
+			subjectsViewBtn.setId("rich-blue-selected");
+			schedulesViewBtn.setId("rich-red");
+			
+			borderPane.setLeft(possibleSchedsLV);
+			borderPane.setRight(rightMenuSchedules);
+			
+			Utils.colorUIClassHours(weekUIHours, Color.LIGHTGRAY);
+			Utils.hideTextUIClassHours(weekUIHours);
+			
+			scheduler.calcAllPossibleSchedules();
+			scheduler.sumAllSchedules();
+			
+			int size = possibleSchedsLV.getItems().size();
+			for (int i = 0; i < size; i++)
+				possibleSchedsLV.getItems().remove(0);
+			
+			for (int i = 0; i < scheduler.getPossibleSchedules().size(); i++)
+				possibleSchedsLV.getItems().add(Integer.toString(i + 1));
+			
+			subjectsSelected = false;
+			schedulesSelected = true;
+			schedulesViewMenu.setSelected(true);
+		}
 	}
 }

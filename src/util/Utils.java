@@ -213,11 +213,29 @@ public class Utils {
 			int[] y = Utils.getYforHour(hour);
 			
 			weekUIHours.get(Utils.getXforDay(hour)).get(y[0]).setColor(color);
-			weekUIHours.get(Utils.getXforDay(hour)).get(y[0]).setText(getInitials(schedule.getSubject().getName()));
+			weekUIHours.get(Utils.getXforDay(hour)).get(y[0]).setText(getInitials(schedule.getSubject().getName()), getInitials(schedule.getTeacher().getName()));
 			if(y[1] != -1) {
 				for(int i = y[0]; i <= y[1]; i++)  {
 					weekUIHours.get(Utils.getXforDay(hour)).get(i).setColor(color);
-					weekUIHours.get(Utils.getXforDay(hour)).get(i).setText(getInitials(schedule.getSubject().getName()));
+					weekUIHours.get(Utils.getXforDay(hour)).get(i).setText(getInitials(schedule.getSubject().getName()), getInitials(schedule.getTeacher().getName()));
+				}
+			}
+		}
+	}
+	
+	public static void displayClassSched(ClassSchedule schedule, ArrayList<ArrayList<UIClassHour>> weekUIHours, Color color, String count) {
+		//System.out.println(schedule.getSubject().getName());
+		
+		for(ClassHour hour: schedule.getClasses()) {
+			//System.out.println(hour.toString());
+			int[] y = Utils.getYforHour(hour);
+			
+			weekUIHours.get(Utils.getXforDay(hour)).get(y[0]).setColor(color);
+			weekUIHours.get(Utils.getXforDay(hour)).get(y[0]).setText(getInitials(schedule.getSubject().getName()), getInitials(schedule.getTeacher().getName()) + count);
+			if(y[1] != -1) {
+				for(int i = y[0]; i <= y[1]; i++)  {
+					weekUIHours.get(Utils.getXforDay(hour)).get(i).setColor(color);
+					weekUIHours.get(Utils.getXforDay(hour)).get(i).setText(getInitials(schedule.getSubject().getName()), getInitials(schedule.getTeacher().getName()) + count);
 				}
 			}
 		}

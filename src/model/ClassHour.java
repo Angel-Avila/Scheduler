@@ -1,6 +1,6 @@
 package model;
 
-public class ClassHour {
+public class ClassHour implements Cloneable{
 	protected int start;
 	protected int end;
 	protected Subject subject;
@@ -67,5 +67,9 @@ public class ClassHour {
 		if(day == Day.FRIDAY)
 			return "Viernes";
 		return "Sábado";
+	}
+	
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 }

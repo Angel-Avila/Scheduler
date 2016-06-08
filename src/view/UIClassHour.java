@@ -86,11 +86,11 @@ public class UIClassHour extends StackPane {
 		setOnMouseClicked(value);
 	}
 	
-	public void setText(String text) {
-		this.text.setVisible(true);
-		this.text.setText(text);
-		this.text.setFont(Font.font("Helvetica", FontWeight.BOLD, 12));
-		this.text.setFill(Color.WHITE);
+	public void setText(String subject, String teacher) {
+		text.setVisible(true);
+		text.setText(subject + '\n' + teacher);
+		text.setFont(Font.font("Helvetica", FontWeight.BOLD, 12));
+		text.setFill(Color.WHITE);
 	}
 	
 	public void hideText() {

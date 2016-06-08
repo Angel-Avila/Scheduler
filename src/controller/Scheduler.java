@@ -100,9 +100,6 @@ public class Scheduler {
 				Schedule tempSchedule = (Schedule) schedule.clone();
 				tempSchedule.setClassSchedules(schedule.extracted(schedule));
 				tempSchedule.getSum();
-				System.out.println("DTG: " + tempSchedule.getDaysToGo());
-				System.out.println("Huecos: " + tempSchedule.getHuecos());
-				System.out.println("TEMPSCHEDULE HERE ********" + tempSchedule);
 				possibleSchedules.add(tempSchedule);
 			} catch (CloneNotSupportedException e) {
 				e.printStackTrace();

@@ -1,6 +1,6 @@
 package model;
 
-public class ClassDay {
+public class ClassDay implements Cloneable {
 	protected Day day;
 	protected ClassHour[] hours;
 	
@@ -112,5 +112,9 @@ public class ClassDay {
 			index = 6;
 		
 		return index;
+	}
+	
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 }
