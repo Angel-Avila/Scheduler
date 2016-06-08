@@ -1,4 +1,5 @@
-/bin
+bin/
 .DS_STORE
 .project
 src/.DS_STORE
+.settings
