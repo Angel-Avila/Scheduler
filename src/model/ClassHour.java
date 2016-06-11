@@ -1,6 +1,12 @@
 package model;
 
-public class ClassHour implements Cloneable{
+import java.io.Serializable;
+
+public class ClassHour implements Cloneable, Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	protected int start;
 	protected int end;
 	protected Subject subject;

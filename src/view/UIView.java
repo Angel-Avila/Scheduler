@@ -1,8 +1,11 @@
 package view;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import controller.Scheduler;
+import controller.Serializer;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -24,10 +27,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import model.ClassHour;
 import model.ClassSchedule;
 import model.Day;
+import model.Schedule;
 import model.SortCategory;
 import model.Subject;
 import model.Teacher;
@@ -36,6 +42,7 @@ import util.Utils;
 public class UIView extends Application {
 	
 	Scheduler scheduler;
+	Serializer serializer;
 	
 	Button addSubjectBtn;
 	Button deleteSubjectBtn;
@@ -85,6 +92,7 @@ public class UIView extends Application {
 	public void start(Stage primaryStage) throws Exception {
 		
 		scheduler = new Scheduler();
+		serializer = new Serializer();
 		
 		colors = new Color[15];
 		colors[0] = Color.CHOCOLATE;
@@ -146,7 +154,24 @@ public class UIView extends Application {
 		scheduler.addWantedClassSchedule(disenioSoftwareSchedules);
 		
 		scheduler.calcAllPossibleSchedules();
-		scheduler.printPossibleSchedules();
+		//scheduler.printPossibleSchedules();
+		
+		int c = 0;
+		for(Schedule schedule: scheduler.getPossibleSchedules()) {
+			System.out.println((c + 1) + ": ");
+			System.out.println(schedule);
+			System.out.println("----------------------------------------------------------------------");
+			c++;
+		}
+		
+		/*System.out.println("Hey");
+		serializer.serialize((List<Schedule>) scheduler.getPossibleSchedules(), "/Users/Angel/Documents/Untitled.sch");
+		serializer.deserialize("/Users/Angel/Documents/Untitled.sch");
+		System.out.println("Ho");
+		File file = new File("/Users/Angel/Desktop/Untitled.sch");
+		List<Schedule> s = serializer.deserialize("/Users/Angel/Desktop/Untitled.sch");
+		for(Schedule schedule: s)
+			System.out.println(schedule);*/
 		
 		// MARK: - UI ================================================================================================
 		
@@ -401,6 +426,10 @@ public class UIView extends Application {
 			
 		});
 		
+		openFile.setOnAction(e -> openFile(serializer));
+		
+		save.setOnAction(e -> saveFile(serializer, scheduler.getPossibleSchedules()));
+		
 		subjectsViewBtn.setOnAction(e -> {
 			System.out.println("blue");
 			viewSubjects();
@@ -593,6 +622,31 @@ public class UIView extends Application {
 	private void closeProgram() {
 		System.out.println("Schedules saved!");
 		window.close();
+	}
+	
+	private void openFile(Serializer serializer) {
+		FileChooser fc = new FileChooser();
+		fc.getExtensionFilters().addAll(new ExtensionFilter("Scheduler Files", "*.sch"));
+		
+		File selectedFile = fc.showOpenDialog(null);
+		
+		if (selectedFile != null) {
+			List<Schedule> schedules = serializer.deserialize(selectedFile.getAbsolutePath());
+		} else
+			System.out.println("File is not valid");
+	}
+	
+	private void saveFile(Serializer serializer, List<Schedule> schedules) {
+		FileChooser fc = new FileChooser();
+		
+		File file = fc.showSaveDialog(null);
+		
+		if (file != null) {
+			serializer.serialize(schedules, file.getAbsolutePath() + ".sch");
+			System.out.println(file.getName());
+			System.out.println(file.getAbsolutePath());
+		} else
+			System.out.println("File is not valid");
 	}
 	
 	private void viewSubjects() {

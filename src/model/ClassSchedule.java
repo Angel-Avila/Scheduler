@@ -1,9 +1,14 @@
 package model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class ClassSchedule {
+public class ClassSchedule implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	protected Subject subject;
 	protected Teacher teacher;
 	protected ArrayList<ClassHour> classes;
@@ -61,6 +66,15 @@ public class ClassSchedule {
 	}
 	
 	public String toString() {
-		return "Subject: " + subject.getName() + ", Teacher: " + teacher.getName();
+		StringBuilder str = new StringBuilder();
+		
+		str.append("Subject: " + subject.getName() + ", Teacher: " + teacher.getName() + '\n');
+		
+		for(ClassHour hour: classes)
+			str.append(hour.toString() + '\n');
+		
+		str.setLength(str.length() - 1);
+		
+		return str.toString();
 	}
 }

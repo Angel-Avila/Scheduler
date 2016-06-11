@@ -1,8 +1,12 @@
 package model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Schedule implements Cloneable {
+public class Schedule implements Cloneable, Serializable {
+
+	private static final long serialVersionUID = 1L;
+	
 	protected ClassDay[] schoolWeek;
 	protected ArrayList<ClassSchedule> classSchedules;
 	protected int huecos;
@@ -42,8 +46,10 @@ public class Schedule implements Cloneable {
 	public String toString() {
 		StringBuilder str = new StringBuilder();
 		
-		for(ClassDay day: schoolWeek)
-			str.append(day.toString());
+		for(ClassSchedule sched: classSchedules)
+			str.append(sched.toString() + '\n');
+		
+		str.setLength(str.length() - 1);
 		
 		return str.toString();
 	}

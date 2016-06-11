@@ -1,6 +1,12 @@
 package model;
 
-public class Teacher {
+import java.io.Serializable;
+
+public class Teacher implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	protected String name;
 	protected boolean barco;
 	protected boolean bueno;
